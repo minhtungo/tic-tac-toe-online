@@ -2,56 +2,54 @@ import React, { useState } from 'react';
 import Axios from 'axios';
 import Cookies from 'universal-cookie';
 
-const SignUp = () => {
+function SignUp() {
   const cookies = new Cookies();
   const [user, setUser] = useState(null);
 
   const signUp = () => {
+    console.log('hello');
     Axios.post('http://localhost:3001/signup', user).then((res) => {
-      const { token, userId, firstName, lastName, userName, hashedPassword } =
+      const { firstName, lastName, userName, token, userId, hashedPassword } =
         res.data;
       cookies.set('token', token);
       cookies.set('userId', userId);
+      cookies.set('userName', userName);
       cookies.set('firstName', firstName);
       cookies.set('lastName', lastName);
-      cookies.set('userName', userName);
       cookies.set('hashedPassword', hashedPassword);
     });
   };
-
   return (
-    <div className=''>
-      <label>Sign Up</label>
+    <div className='signUp'>
+      <label> SignUp</label>
       <input
-        type='text'
         placeholder='First Name'
         onChange={(event) => {
           setUser({ ...user, firstName: event.target.value });
         }}
       />
       <input
-        type='text'
         placeholder='Last Name'
         onChange={(event) => {
           setUser({ ...user, lastName: event.target.value });
         }}
       />
       <input
-        type='text'
-        placeholder='User Name'
+        placeholder='Username'
         onChange={(event) => {
           setUser({ ...user, userName: event.target.value });
         }}
       />
       <input
-        type='password'
         placeholder='Password'
+        type='password'
         onChange={(event) => {
           setUser({ ...user, password: event.target.value });
         }}
       />
-      <button onClick={signUp}>Sign Up</button>
+      <button onClick={signUp}> Sign Up</button>
     </div>
   );
-};
+}
+
 export default SignUp;
