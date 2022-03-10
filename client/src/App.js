@@ -46,12 +46,17 @@ function App() {
   return (
     <div className='App'>
       {isAuth ? (
-        <button onClick={logOut}>Log Out</button>
+        <button
+          onClick={logOut}
+          className='bg-blue-500 hover:bg-blue-700 text-white uppercase text-sm font-semibold px-4 py-2 roudned'
+        >
+          Log Out
+        </button>
       ) : (
-        <>
+        <div className='w-full mx-auto'>
           <SignUp setIsAuth={setIsAuth} />
           <Login setIsAuth={setIsAuth} />
-        </>
+        </div>
       )}
     </div>
   );
