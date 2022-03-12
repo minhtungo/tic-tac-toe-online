@@ -1,24 +1,53 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { MessageList, MessageInput, Window } from 'stream-chat-react';
 import Board from './Board';
-
-const Game = ({ channel }) => {
+function Game({ channel, setStartGame }) {
   const [playersJoined, setPlayersJoined] = useState(
-    channel.state.watcher_count === 2
+    channel?.state.watcher_count === 2
   );
+  const [result, setResult] = useState({ winner: 'none', state: 'none' });
+
+  useEffect(() => {
+    if (result.state === 'Won') {
+      alert(`${result.winner} won the game!`);
+    }
+
+    if (result.state === 'Tie') {
+      alert(`Game Tie!`);
+    }
+  }, [result.state]);
 
   channel.on('user.watching.start', (event) => {
     setPlayersJoined(event.watcher_count === 2);
   });
+
   if (!playersJoined) {
     return <div>Waiting for other player to join...</div>;
   }
 
   return (
     <div className='gameContainer'>
-      <Board />
-      {/* CHAT */}
-      {/* leave game button */}
+      <Board channel={channel} result={result} setResult={setResult} />
+      <Window>
+        <MessageList
+          hideDeletedMessages
+          messageActions={['react']}
+          defaultItemHeight={100}
+          disableDateSeparator
+          closeReactionSelectorOnClick
+        />
+        <MessageInput noFiles />
+      </Window>
+      <button
+        onClick={async () => {
+          await channel.stopWatching();
+          setStartGame(false);
+        }}
+      >
+        Leave Game
+      </button>
     </div>
   );
-};
+}
+
 export default Game;

@@ -1,50 +1,87 @@
-import { useState } from 'react';
-import { useChatContext, Channel } from 'stream-chat-react';
+import React, { useEffect, useState } from 'react';
+import Board from './Board';
+import Cookies from 'universal-cookie';
+import {
+  useChatContext,
+  Channel,
+  VirtualizedMessageList,
+} from 'stream-chat-react';
 import Game from './Game';
+import '../Chat.css';
+import CustomMessageInput from './CustomMessageInput';
 
-const JoinGame = () => {
-  const [rivalUsername, setRivalUsername] = useState('');
+function JoinGame({ removeAllCookies, setIsAuth }) {
+  const [startGame, setStartGame] = useState(false);
+  const [user2, setUser2] = useState(false);
+  const [channelName, setChannelName] = useState('');
+
+  const cookies = new Cookies();
+
   const { client } = useChatContext();
-  const [channel, setChannel] = useState(null);
+
+  const [channel, setChannel] = useState(
+    client.channel('messaging', cookies.get('channelName'))
+  );
+
+
 
   const createChannel = async () => {
-    const response = await client.queryUsers({ name: { $eq: rivalUsername } });
+    try {
+      const response = await client.queryUsers({
+        name: { $eq: user2 },
+      });
 
-    if (response.users.length === 0) {
-      alert('User not found');
-      return;
+      if (response.users.length === 0) {
+        alert('User not found');
+        return;
+      }
+
+      const newChannel = await client.channel('messaging', {
+        members: [client.userID, response.users[0].id],
+      });
+      cookies.set('channelName', channelName);
+      await newChannel.watch();
+
+      setChannel(newChannel);
+      setStartGame(true);
+    } catch (error) {
+      console.log(error);
     }
-
-    const newChannel = await client.channel('messaging', {
-      members: [client.userID, response.users[0].id],
-    });
-
-    await newChannel.watch();
-    setChannel(newChannel);
   };
 
   return (
-    <>
-      {channel ? (
-        <Channel channel={channel}>
-          <Game channel={channel} />
+    <div>
+      {startGame ? (
+        <Channel channel={channel} Input={CustomMessageInput}>
+          <Game channel={channel} setStartGame={setStartGame} />
         </Channel>
       ) : (
-        <div className='joinGame'>
-          <h4>Create Game</h4>
-          <input
-            placeholder='Username of rival...'
-            onChange={(event) => setRivalUsername(event.target.value)}
-          />
+        <>
+          <div className='joinGame'>
+            <h4> Create A Game</h4>
+            <input
+              placeholder='Username of your rival...'
+              onChange={(event) => {
+                setUser2(event.target.value);
+              }}
+            />
+
+            <button onClick={createChannel}>Start/Join Game</button>
+          </div>
+
           <button
-            onClick={createChannel}
-            className='bg-blue-500 hover:bg-blue-700 text-white uppercase text-sm font-semibold px-4 py-2 roudned'
+            onClick={() => {
+              client.disconnectUser();
+              removeAllCookies();
+              setIsAuth(false);
+            }}
           >
-            Join Game
+            Log Out
           </button>
-        </div>
+        </>
       )}
-    </>
+    </div>
   );
-};
+}
+
 export default JoinGame;
