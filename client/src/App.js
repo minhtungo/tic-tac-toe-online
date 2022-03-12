@@ -47,7 +47,7 @@ function App() {
   }
 
   return (
-    <div className='App'>
+    <div className='App w-full h-full flex justify-center items-center bg-blue-400'>
       {isAuth ? (
         <Chat client={client}>
           <JoinGame />

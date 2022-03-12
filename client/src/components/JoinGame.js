@@ -9,13 +9,14 @@ const JoinGame = () => {
 
   const createChannel = async () => {
     const response = await client.queryUsers({ name: { $eq: rivalUsername } });
+
     if (response.users.length === 0) {
       alert('User not found');
       return;
     }
 
     const newChannel = await client.channel('messaging', {
-      members: [client.userId, response.users[0].id],
+      members: [client.userID, response.users[0].id],
     });
 
     await newChannel.watch();

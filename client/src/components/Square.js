@@ -1,6 +1,8 @@
-const Square = () => {
+const Square = ({ chooseSquare, val }) => {
   return (
-    <div>Square</div>
-  )
-}
-export default Square
+    <div className='square' onClick={chooseSquare}>
+      {val}
+    </div>
+  );
+};
+export default Square;

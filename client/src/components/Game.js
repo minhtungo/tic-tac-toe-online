@@ -9,7 +9,7 @@ const Game = ({ channel }) => {
   channel.on('user.watching.start', (event) => {
     setPlayersJoined(event.watcher_count === 2);
   });
-  if (playersJoined) {
+  if (!playersJoined) {
     return <div>Waiting for other player to join...</div>;
   }
 
