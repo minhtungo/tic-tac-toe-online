@@ -1,7 +1,10 @@
 import './App.css';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
+import JoinGame from './components/JoinGame';
+
 import { StreamChat } from 'stream-chat';
+import { Chat } from 'stream-chat-react';
 import Cookies from 'universal-cookie';
 import { useState } from 'react';
 
@@ -46,12 +49,15 @@ function App() {
   return (
     <div className='App'>
       {isAuth ? (
-        <button
-          onClick={logOut}
-          className='bg-blue-500 hover:bg-blue-700 text-white uppercase text-sm font-semibold px-4 py-2 roudned'
-        >
-          Log Out
-        </button>
+        <Chat client={client}>
+          <JoinGame />
+          <button
+            onClick={logOut}
+            className='bg-blue-500 hover:bg-blue-700 text-white uppercase text-sm font-semibold px-4 py-2 roudned'
+          >
+            Log Out
+          </button>
+        </Chat>
       ) : (
         <div className='w-full mx-auto'>
           <SignUp setIsAuth={setIsAuth} />
